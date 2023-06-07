@@ -1,0 +1,9 @@
+wordpress:
+  service:
+    type: ClusterIP
+ingressRoute:
+  domain: "wordpress.edu.iits.tech"
+  entryPointName: "websecure"
+  certificate:
+    name: "wordpress-cert"
+    clusterIssuer: letsencrypt
