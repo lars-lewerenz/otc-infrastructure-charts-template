@@ -71,3 +71,9 @@ charts:
     targetRevision: "1.2.0"
     # values files needs to be inside this chart
     valueFile: "value-files/admin-dashboard/values.yaml"
+
+  wordpress:
+    namespace: wordpress
+    targetRevision: "main"
+    repoURL: "https://github.com/iits-consulting/otc-infrastructure-charts-template.git"
+    path: "local-charts/wordpress"

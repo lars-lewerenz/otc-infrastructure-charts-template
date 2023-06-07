@@ -10,6 +10,10 @@ metadata:
     {{- if $chartValues.valueFile }}
     valueFileChecksum: {{ (print ($.Files.Get $chartValues.valueFile)) | sha256sum }}
     {{- end }}
+  {{- if ne $chartValues.preventDelete true }}
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  {{- end }}
 spec:
   project: {{ ($.Values.projectValues).projectName | default $.Release.Name }}
   revisionHistoryLimit: 3
@@ -29,7 +33,9 @@ spec:
     syncOptions:
       - CreateNamespace=true
 {{- if $chartValues.syncOptions }}
-{{ $chartValues.syncOptions | toString | indent 8 }}
+{{- range $option := $chartValues.syncOptions }}
+      - {{ $option }}
+{{- end }}
 {{- end }}
 {{- else }}
   syncPolicy: {}

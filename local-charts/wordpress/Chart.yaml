@@ -1,0 +1,8 @@
+apiVersion: v2
+description: wordpress
+name: wordpress
+version: 0.1.0
+dependencies:
+  - name: wordpress
+    repository: https://charts.bitnami.com/bitnami
+    version: 16.1.12
