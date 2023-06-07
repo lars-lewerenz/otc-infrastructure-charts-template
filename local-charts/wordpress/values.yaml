@@ -1,4 +1,10 @@
 wordpress:
+  replicaCount: 2
+  mariadb:
+    enabled: false
+  externalDatabase:
+    database: postgres
+    # todo: add credentials
   service:
     type: ClusterIP
 ingressRoute:
