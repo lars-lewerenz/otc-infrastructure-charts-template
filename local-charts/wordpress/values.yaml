@@ -2,11 +2,16 @@ wordpress:
   replicaCount: 2
   mariadb:
     enabled: false
-  externalDatabase:
-    database: postgres
-    # todo: add credentials
+#  externalDatabase:
+#    database: postgres
+#    # todo: add credentials
   service:
     type: ClusterIP
+  multisite:
+    enable: true
+    host: "wordpress.edu.iits.tech"
+    networkType: subdomain
+    enableNipIoRedirect: false
 ingressRoute:
   domain: "wordpress.edu.iits.tech"
   entryPointName: "websecure"
