@@ -2,6 +2,8 @@ wordpress:
   replicaCount: 2
   wordpressUsername: iits
   wordpressPassword: "zBMyVRE7tCWbItS83mu=9C3GyHyi@PGz"
+  updateStrategy:
+    type: Recreate
   mariadb:
     enabled: true
 #  externalDatabase:
