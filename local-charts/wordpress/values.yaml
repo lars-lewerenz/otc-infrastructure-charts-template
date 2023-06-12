@@ -5,10 +5,11 @@ wordpress:
   updateStrategy:
     type: Recreate
   mariadb:
-    enabled: true
-#  externalDatabase:
-#    database: postgres
-#    # todo: add credentials
+    enabled: false
+  externalDatabase:
+    database: wordpress
+    user: # set by argocd
+    password: # set by argocd
   service:
     type: ClusterIP
   multisite:

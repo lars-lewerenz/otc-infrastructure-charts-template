@@ -4,6 +4,8 @@ projectValues:
   traefikElbId: "SET_BY_TERRAFORM"
   adminDomain: "SET_BY_TERRAFORM"
   storageClassKmsKeyId: "SET_BY_TERRAFORM"
+  wordpressDbUsername: "SET_BY_TERRAFORM"
+  wordpressDbPassword: "SET_BY_TERRAFORM"
 
 global:
   helm:
@@ -77,3 +79,6 @@ charts:
     targetRevision: "main"
     repoURL: "https://github.com/lars-lewerenz/otc-infrastructure-charts-template.git"
     path: "local-charts/wordpress"
+    parameters:
+      "wordpress.externalDatabase.user": "{{.Values.projectValues.wordpressDbUsername}}"
+      "wordpress.externalDatabase.password": "{{.Values.projectValues.wordpressDbPassword}}"
