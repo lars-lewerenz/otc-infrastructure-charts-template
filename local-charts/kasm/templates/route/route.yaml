@@ -7,7 +7,7 @@ spec:
   entryPoints:
     - {{$serviceValues.ingressRoute.entryPointName}}
   routes:
-    - match: Host(`{{$serviceValues.ingressRoute.domain}}`)
+    - match: HostSNI(`{{$serviceValues.ingressRoute.domain}}`)
       services:
         - name: {{ $serviceName}}
           namespace: {{ $.Release.Namespace }}
