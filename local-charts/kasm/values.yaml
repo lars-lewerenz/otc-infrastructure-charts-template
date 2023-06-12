@@ -1,0 +1,262 @@
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    password: "your_redis_password"
+
+postgresql:
+  enabled: true
+  postgresqlPassword: "your_postgres_password"
+  postgresqlDatabase: "your_database_name"
+
+ingressRoute:
+  domain: "my-domain.com"
+  pathPrefix: "/"
+  entryPointName: "after-proxy"
+
+services:
+  api:
+    nameOverride:
+    image:
+      repository: "kasmweb/api"
+      tag: "1.13.0"
+      pullPolicy: "IfNotPresent"
+    service:
+      port: 8080
+      externalPort: 80
+    podSecurityContext:
+      fsGroup: 2000
+    securityContext:
+      runAsUser: 1000
+      runAsNonRoot: true
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+    livenessProbe:
+      httpGet:
+        path: "/"
+        port: 8080
+      initialDelaySeconds: 10
+      periodSeconds: 60
+    readinessProbe:
+      httpGet:
+        path: "/"
+        port: 8080
+      initialDelaySeconds: 10
+      periodSeconds: 60
+    autoscaling:
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 80
+    extraEnv:
+#      ENV_VAR_NAME: "value"
+
+  manager:
+    nameOverride:
+    image:
+      repository: "kasmweb/manager"
+      tag: "1.13.0"
+      pullPolicy: "IfNotPresent"
+    service:
+      port: 8080
+      externalPort: 80
+    podSecurityContext:
+      fsGroup: 2000
+    securityContext:
+      runAsUser: 1000
+      runAsNonRoot: true
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+    livenessProbe:
+      httpGet:
+        path: "/"
+        port: 8080
+      initialDelaySeconds: 10
+      periodSeconds: 60
+    readinessProbe:
+      httpGet:
+        path: "/"
+        port: 8080
+      initialDelaySeconds: 10
+      periodSeconds: 60
+    autoscaling:
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 80
+    extraEnv:
+#      ENV_VAR_NAME: "value"
+
+  agent:
+    nameOverride:
+    image:
+      repository: "kasmweb/agent"
+      tag: "1.13.0"
+      pullPolicy: "IfNotPresent"
+    service:
+      port: 8080
+      externalPort: 80
+    podSecurityContext:
+      fsGroup: 2000
+    securityContext:
+      runAsUser: 1000
+      runAsNonRoot: true
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+    livenessProbe:
+      httpGet:
+        path: "/"
+        port: 8080
+      initialDelaySeconds: 10
+      periodSeconds: 60
+    readinessProbe:
+      httpGet:
+        path: "/"
+        port: 8080
+      initialDelaySeconds: 10
+      periodSeconds: 60
+    autoscaling:
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 80
+    extraEnv:
+#      ENV_VAR_NAME: "value"
+
+  share:
+    nameOverride:
+    image:
+      repository: "kasmweb/share"
+      tag: "1.13.0"
+      pullPolicy: "IfNotPresent"
+    service:
+      port: 8080
+      externalPort: 80
+    podSecurityContext:
+      fsGroup: 2000
+    securityContext:
+      runAsUser: 1000
+      runAsNonRoot: true
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+    livenessProbe:
+      httpGet:
+        path: "/"
+        port: 8080
+      initialDelaySeconds: 10
+      periodSeconds: 60
+    readinessProbe:
+      httpGet:
+        path: "/"
+        port: 8080
+      initialDelaySeconds: 10
+      periodSeconds: 60
+    autoscaling:
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 80
+    extraEnv:
+#      ENV_VAR_NAME: "value"
+
+  guac:
+    nameOverride:
+    image:
+      repository: "kasmweb/kasm-guac"
+      tag: "1.13.0"
+      pullPolicy: "IfNotPresent"
+    service:
+      port: 8080
+      externalPort: 80
+    podSecurityContext:
+      fsGroup: 2000
+    securityContext:
+      runAsUser: 1000
+      runAsNonRoot: true
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+    livenessProbe:
+      httpGet:
+        path: "/"
+        port: 8080
+      initialDelaySeconds: 10
+      periodSeconds: 60
+    readinessProbe:
+      httpGet:
+        path: "/"
+        port: 8080
+      initialDelaySeconds: 10
+      periodSeconds: 60
+    autoscaling:
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 80
+    extraEnv:
+#      ENV_VAR_NAME: "value"
+
+  proxy:
+    nameOverride:
+    image:
+      repository: "kasmweb/nginx"
+      tag: "1.13.0"
+      pullPolicy: "IfNotPresent"
+    service:
+      port: 8080
+      externalPort: 80
+    podSecurityContext:
+      fsGroup: 2000
+    securityContext:
+      runAsUser: 1000
+      runAsNonRoot: true
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+    livenessProbe:
+      httpGet:
+        path: "/"
+        port: 8080
+      initialDelaySeconds: 10
+      periodSeconds: 60
+    readinessProbe:
+      httpGet:
+        path: "/"
+        port: 8080
+      initialDelaySeconds: 10
+      periodSeconds: 60
+    autoscaling:
+      enabled: true
+      minReplicas: 1
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 80
+    extraEnv:
+#      ENV_VAR_NAME: "value"
