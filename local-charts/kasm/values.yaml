@@ -24,18 +24,6 @@ services:
       requests:
         cpu: 2000m
         memory: 4096Mi
-    livenessProbe:
-      httpGet:
-        path: "/"
-        port: 6901
-      initialDelaySeconds: 10
-      periodSeconds: 60
-    readinessProbe:
-      httpGet:
-        path: "/"
-        port: 6901
-      initialDelaySeconds: 10
-      periodSeconds: 60
     autoscaling:
       enabled: false
       minReplicas: 1
