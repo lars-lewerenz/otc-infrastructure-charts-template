@@ -2,7 +2,7 @@
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: {{.Release.Name}}
+  name: {{$serviceName}}
 spec:
   entryPoints:
     - {{$serviceValues.ingressRoute.entryPointName}}
@@ -11,8 +11,8 @@ spec:
       match: Host(`{{$serviceValues.ingressRoute.domain}}`)
       services:
         - kind: Service
-          name: {{ .Release.Name }}
-          namespace: {{ .Release.Namespace }}
+          name: {{ $serviceName}}
+          namespace: {{ $.Release.Namespace }}
           passHostHeader: true
-          port: {{ $serviceValues.services.user1.service.port }}
+          port: {{ $serviceValues.service.externalPort }}
 {{- end }}
