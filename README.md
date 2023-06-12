@@ -1,168 +1,142 @@
-# Blueprint: OTC GitOps
+# OTC-Auth
+Open Source CLI for the Authorization with the Open Telekom Cloud.
 
-This repository serves as a blueprint to start fast and easy with OTC GitOps
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/iits-consulting/otc-auth/blob/main/LICENSE)
+![Build](https://github.com/iits-consulting/otc-auth/workflows/Build/badge.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/iits-consulting/otc-auth)](https://goreportcard.com/report/github.com/iits-consulting/otc-auth)
+![CodeQL](https://github.com/iits-consulting/otc-auth/workflows/CodeQL/badge.svg)
+![ViewCount](https://views.whatilearened.today/views/github/iits-consulting/otc-auth.svg)
 
-## Requirements
+With this CLI you can log in to the OTC through its Identity Access Manager (IAM) or through an external Identity Provider (IdP) in order to get an unscoped token. The allowed protocols for IdP login are SAML and OIDC. When logging in directly with Telekom's IAM it is also possible to use Multi-Factor Authentication (MFA) in the process.
 
-First setup the infrastructure according to the README within [this Github Template](https://github.com/iits-consulting/otc-terraform-template)  
-then create a fork from this repository.
+After you have retrieved an unscoped token, you can use it to get a list of the clusters in a project from the Cloud Container Engine (CCE) and also get the remote kube config file and merge with your local file.
 
-## Introduction
+This tool can also be used to manage (create) a pair of Access Key/ Secret Key in order to make requests more secure.
 
-This helm chart _infrastructure-charts_ is automatically installed by terraform. It then creates
-multiple other applications in the format of [app-of-apps pattern](https://argo-cd.readthedocs.io/en/stable/operator-manual/cluster-bootstrapping/#app-of-apps-pattern)
+## Demo
+https://user-images.githubusercontent.com/19291722/208880256-b0da924e-254e-4bc4-b9ee-396c43234a5b.mp4
 
-Within `infrastructure-charts/values.yaml` you can add new services and customize them. [Helm tpl](https://helm.sh/docs/howto/charts_tips_and_tricks/#using-the-tpl-function) is supported within the _values.yaml_ file
+## Install
+You can download the binary for your system in the [releases page](https://github.com/iits-consulting/otc-auth/releases).
+Unpack the binary and add it to your PATH and you are good to go!
 
-## Access ArgoCD UI
+### Arch Linux
 
-If you didn't source the `shell-helper.sh` in the https://github.com/iits-consulting/otc-terraform-template project please do so by running:
+Users of Arch Linux may use the package published in the [AUR](https://aur.archlinux.org/packages/otc-auth)
+
+## Login
+Use the `login` command to retrieve an unscoped token either by logging in directly with the Service Provider or through an IdP. You can see the help page by entering `login --help` or `login -h`. There are three log in options (`iam`, `idp-saml`, and `idp-oidc`) and one of them must be provided.
+
+### Service Provider Login (IAM)
+To log in directly with the Open Telekom Cloud's IAM, you will have to supply the domain name you're attempting to log in to (usually starting with "OTC-EU", following the region and a longer identifier), your username and password.
+
+`otc-auth login iam --os-username <username> --os-password <password> --os-domain-name <domain_name> --region <region>`
+
+In addition, it is possible to use MFA if that's desired and/or required. In this case both arguments `--os-user-domain-id` and `--totp` are required. The user id can be obtained in the "My Credentials" page on the OTC.
+
+```
+otc-auth login iam --os-username <username> --os-password <password> --os-domain-name <domain_name> --os-user-domain-id <user_domain_id> --totp <6_digit_token> --region <region>
+```
+
+The OTP Token is 6-digit long and refreshes every 30 seconds. For more information on MFA please refer to the [OTC's documentation](https://docs.otc.t-systems.com/en-us/usermanual/iam/iam_10_0002.html).
+
+### Identity Provider Login (IdP)
+You can log in with an external IdP using either the `saml` or the `oidc` protocols. In both cases you will need to specify the authorization URL, the name of the Identity Provider (as set on the OTC), as well as username and password for the SAML login and client id (and optionally client secret) for the OIDC login flow.
+
+#### External IdP and SAML
+The SAML login flow is SP initiated and requires you to send username and password to the SP. The SP then authorizes you with the configured IdP and returns either an unscoped token or an error, if the user is not allowed to log in.
+
+```otc-auth login idp-saml --os-username <username> --os-password <password> --idp-name <idp_name> --idp-url <authorization_url> --os-domain-name <os_domain_name> --region <region>```
+
+At the moment, no MFA is supported for this login flow.
+
+#### External IdP and OIDC
+The OIDC login flow is user initiated and will open a browser window with the IdP's authorization URL for the user to log in as desired. This flow does support MFA (this requires it to be configured on the IdP). After being successfully authenticated with the IdP, the SP will be contacted with the corresponding credentials and will return either an unscoped token or an error, if the user is not allowed to log in.
+
+```otc-auth login idp-oidc --idp-name <idp_name> --idp-url <authorization_url> --client-id <client_id> --os-domain-name <os_domain_name> --region <region> [--client-secret <client_secret>]```
+
+The argument `--client-id` is required, but the argument `--client-secret` is only needed if configured on the IdP.
+
+#### Service Account via external IdP and OIDC
+
+If you have set up your IdP to provide service accounts then you can utilize service account with `otc-auth` too. Make also sure that the IdP is correctly configured in the OTC Identity and Access Management. Then run the `otc-auth` as follows:
+
 
 ```shell
-source shell-helper.sh
+otc-auth login idp-oidc \
+    --idp-name NameOfClientInIdp \
+    --idp-url IdpAuthUrl \
+    --os-domain-name YourDomainName \
+    --region YourRegion \
+    --client-id NameOfIdpInOtcIam \
+    --client-secret ClientSecretForTheClientInIdp \
+    --service-account
 ```
 
-Now you are able to execute the `argo` command. Run the `argo` command. This will do the following:
+### OIDC Scopes
 
-1. Print out the Username and the Password on the first line
-2. The browser should open automatically and open a tab to the ArgoCD UI. If it does not open a browser, you can do it yourself by opening this url: http://localhost:8080/argocd
-3. You should see that ArgoCD automatically already installed multiple charts
+The OIDC scopes can be configured if required. To do so simply provide one of the following two when logging in with `idp-oidc`:
 
-If all services are up and running you should also be able to access your admin domain like this: https://admin.YOUR-DOMAIN-NAME
+- provide the flag `--oidc-scopes pleasePut,HereAll,YourScopes,WhichYouNeed` 
+- provide the environment variable `export OIDC_SCOPES="pleasePut,HereAll,YourScopes,WhichYouNeed"`
 
-## How to deploy some charts/services
+The default value is `openid,profile,roles,name,groups,email`
 
-You have 3 options to deploy some services.
+### Remove Login
+Clouds are differentiated by their identifier `--os-domain-name`. To delete a cloud, use the `remove` command.
 
-1. Chart from a global helm chart registry which is configured in line number 12 (in this example we use https://charts.iits.tech/). 
-   Charts deployed like this: 
-   _argocd-config_, _otc-storage-classes_, _traefik_, _cert-manager_, _basic-auth-gateway_, _kafka_, _admin-dashboard_
+`otc-auth login remove --os-domain-name <os_domain_name> --region <region>`
 
-     
-2. Chart from a non global helm chart registry. Charts deployed like this: _bitnami-kafka_ 
-3. Chart which resides inside this git repository. Charts deployed like this: _akhq_
+## List Projects
+It is possible to get a list of all projects in the current cloud. For that, use the following command.
 
+`otc-auth projects list`
 
-Let's deploy some additional chart. Now it is time for you deploy some charts/services by yourself.
-In this example we will install an elastic stack (kibana/elasticsearch/filebeat) 
-   * Open _infrastructure-charts/values.yaml_
-   * Add a new service like this:
-     ```yaml
-     elastic-stack:
-       namespace: monitoring
-       targetRevision: "7.17.3-route-bugfix"
-     ```
-You need to commit and push this change now. Argo detects the changes and applies them after around 2-3 minutes.
+## Cloud Container Engine
+Use the `cce` command to retrieve a list of available clusters in your project and/or get the remote kube configuration file. You can see the help page by entering `cce --help` or `cce -h`.
 
-After deployment please update the admin dashboard (infrastructure-charts/values-files/admin-dashboard/values.yaml) with the new links.
-* /kibana
-* /elasticsearch
+To retrieve a list of clusters for a project use the following command. The project name will be checked against the ones in the cloud at the moment of the request.
+If the desired project isn't found, you will receive an error message.
 
-If you don't want to search for icons you can see the solution here: https://github.com/iits-consulting/charts/blob/main/charts/iits-admin-dashboard/files/index.html
+`otc-auth cce list --os-domain-name <os_domain_name> --region <region> --os-project-name <project_name>`
 
-If the routing works go to the Kyverno _/policies/#/_ there should be 2 violations. 
-Discuss with your team members how to fix this issue.
+To retrieve the remote kube configuration file (and merge to your local one) use the following command:
 
-## How to change values of the charts
+`otc-auth cce get-kube-config --os-domain-name <os_domain_name> --region <region> --os-project-name <project_name> --cluster <cluster_name>`
 
-You have 3 ways of changing the values of a chart
+Alternatively you can pass the argument `--days-valid` to set the period of days the configuration will be valid, the default is 7 days.
 
-1. You change the values inside the remote/local helm chart itself
-2. You set parameters inside the "infrastructure-charts/values.yaml" like shown between line number 55 till 57. 
-   We would recommend this approach if you need to template values or if you have just a few values which needs to be set.
-3. You specify the location of a _values.yaml_ file like shown on line number 82.
-   We would recommend this approach only if you have a lot of static values which are not stage dependent.
+## Manage Access Key and Secret Key Pair
+You can use the OTC-Auth tool to download the AK/SK pair directly from the OTC. It will download the "ak-sk-env.sh" file to the current directory. The file contains four environment variables.
 
-Now let's change some values: 
+`otc-auth access-token create --os-domain-name <os_domain_name> --region <region>`
 
-1. Please change inside `/infrastructure-charts/values.yaml` the number of traefik replicas from 1 to 2
-2. Commit and push your changes
-3. Check the service in the ArgoCD UI and verify that it scaled up
+The "ak-sk-env.sh" file must then be sourced before you can start using the environment variables.
 
-## Handover variables from Terraform to ArgoCD
+## Openstack Integration
+The OTC-Auth tool is able to generate the clouds.yaml config file for openstack. With this file it is possible to
+reuse the clouds.yaml with terraform.
 
-Since this setup is build on top of the otc-terraform-template you can hand over information from terraform to argo like this:
+If you execute this command
 
-```terraform
-resource "helm_release" "argocd" {
-  ...
-  values                = [
-    yamlencode({
-      projects = {
-        infrastructure-charts = {
-          projectValues = {
-            # Set this to enable stage $STAGE-values.yaml
-            stage        = var.stage
-            traefikElbId = module.terraform_secrets_from_encrypted_s3_bucket.secrets["elb_id"]
-            adminDomain  = "admin.${var.domain_name}"
-            storageClassKmsKeyId = module.terraform_secrets_from_encrypted_s3_bucket.secrets["storage_class_kms_key_id"]
-          }
-      ...
-    }
-    )
-  ]
-}
-```
-All _projectValues_ variables are given over to argo, and we can reuse them here.
+`otc-auth openstack config-create --region <region>`
 
-In this example the _stage_, _traefikElbId_, _adminDomain_ _storageClassKmsKeyId_ variables are handed over to argo.
+It will create a cloud config for every project which you have access to and generate a scoped token. After that it overrides the
+the clouds.yaml (by default: ~/.config/openstack/clouds.yaml) file.
 
-## How to integrate Business Apps
+## Environment Variables
+The OTC-Auth tool also provides environment variables for all the required arguments. For the sake of compatibility, they are aligned with the Open Stack environment variables (starting with OS).
 
-1. First copy the whole content of this project to some other git repository
-2. Change then the folder _infrastructure-charts_ to something you like for example _app-charts_
-3. Change also all the other occurrences from _infrastructure-charts_ to _app-charts_
-4. Register the _app-charts_ as a App of Apps project inside terraform like this:
-```terraform
-resource "helm_release" "argocd" {
-  ...
-  values                = [
-    yamlencode({
-      projects = {
-        infrastructure-charts = {
-        ....
-        }
-        app-charts = {
-          projectValues = {
-            # Set this to enable stage $STAGE-values.yaml
-            stage        = var.stage
-            appDomain  = "${var.domain_name}"
-          }
-
-          git = {
-            password = var.git_token
-            repoUrl  = "https://my-git-repo-for-apps.git"
-          }
-        }
-    }
-    )
-  ]
-}
-```
-5. Argo will now do the same with the _app-charts_ as with the _infrastructure-charts_
-
-For each team we recommend to create a own git repo and AppProject. Then you will be able to fully make use of RBAC.
-
-## (Optional) Try out the setup
-
-Now we go a little bit freestyle. Pick one of the topics below or choose one which you are interested in.
-Talk with your teammates and/or your tutor about it. Try to find the best way to implement it. 
-
-1. Setup a RDS database
-   - How would you create a RDS?
-   - How would you initialize the database with users,tables... ?
-   - How can you avoid to work with IPs? Think about the thing that you need to set inside the microservice the private ip everytime.
-
-2. Set kyverno from "audit" mode to "enforce" and try to deploy an unsecure image
-  - Which steps need to be done to make thirdparty helm images secure?
-  - How would you develop a pipeline to sign you images and verify all images inside kubernetes are signed with a specific key?
-
-3. Try to deploy your own nextcloud
-   - Where do i store my data? What kind of persistent storage should i choose?
-   - How do i backup my data?
-4. Try to deploy a prometheus-stack
-
-
-## The End
-
-![](https://media.giphy.com/media/lD76yTC5zxZPG/giphy.gif)
+| Environment Variable | Argument              | Short | Description                                   |
+|----------------------|-----------------------|:-----:|-----------------------------------------------|
+| CLIENT_ID            | `--client-id`         |  `c`  | Client id as configured on the IdP            |
+| CLIENT_SECRET        | `--client-secret`     |  `s`  | Client secret as configured on the IdP        |
+| CLUSTER_NAME         | `--cluster`           |  `c`  | Cluster name on the OTC                       |
+| OS_DOMAIN_NAME       | `--os-domain-name`    |  `d`  | Domain Name from OTC Tenant                   |
+| REGION               | `--region`            |  `r`  | Region code for the cloud (eu-de for example) |
+| OS_PASSWORD          | `--os-password`       |  `p`  | Password (iam or idp)                         |
+| OS_PROJECT_NAME      | `--os-project-name`   |  `p`  | Project name on the OTC                       |
+| OS_USER_DOMAIN_ID    | `--os-user-domain-id` |  `i`  | User id from OTC Tenant                       |
+| OS_USERNAME          | `--os-username`       |  `u`  | Username (iam or idp)                         |
+| IDP_NAME             | `--idp-name`          |  `i`  | Identity Provider name (as configured on OTC) |
+| IDP_URL              | `--idp-url`           |  N/A  | Authorization endpoint on the IDP             |

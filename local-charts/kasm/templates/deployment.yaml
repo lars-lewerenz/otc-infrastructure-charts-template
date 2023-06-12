@@ -1,5 +1,4 @@
 {{ range $serviceName,$serviceValues := .Values.services }}
-{{- if not $serviceValues.autoscaling.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -9,7 +8,9 @@ spec:
     matchLabels:
       app: {{ default $serviceName $serviceValues.nameOverride }}
       release: {{ default $serviceName $serviceValues.nameOverride }}
+  {{- if not $serviceValues.autoscaling.enabled }}
   replicas: {{ $serviceValues.replicaCount }}
+  {{- end }}
   template:
     metadata:
       labels:
@@ -39,5 +40,4 @@ spec:
               value: {{ $value | quote }}
             {{- end }}
 ---
-{{- end }}
 {{- end }}
