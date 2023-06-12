@@ -1,19 +1,16 @@
 {{ range $serviceName,$serviceValues := .Values.services }}
 apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
+kind: IngressRouteTCP
 metadata:
   name: {{$serviceName}}
 spec:
   entryPoints:
     - {{$serviceValues.ingressRoute.entryPointName}}
   routes:
-    - kind: Rule
-      match: Host(`{{$serviceValues.ingressRoute.domain}}`)
+    - match: Host(`{{$serviceValues.ingressRoute.domain}}`)
       services:
-        - kind: Service
-          name: {{ $serviceName}}
+        - name: {{ $serviceName}}
           namespace: {{ $.Release.Namespace }}
-          passHostHeader: true
           port: {{ $serviceValues.service.externalPort }}
   tls:
     secretName: {{$serviceValues.ingressRoute.certificate.name}}
