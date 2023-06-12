@@ -14,7 +14,7 @@ services:
     replicaCount: 1
     service:
       port: 6901
-      externalPort: 80
+      externalPort: 6901
     podSecurityContext:
       fsGroup: 2000
     securityContext:
