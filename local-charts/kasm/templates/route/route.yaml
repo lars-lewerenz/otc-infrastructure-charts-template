@@ -15,4 +15,9 @@ spec:
           namespace: {{ $.Release.Namespace }}
           passHostHeader: true
           port: {{ $serviceValues.service.externalPort }}
+  tls:
+    secretName: {{$serviceValues.ingressRoute.certificate.name}}
+    domains:
+      - main: {{ $serviceValues.ingressRoute.domain}}
+
 {{- end }}

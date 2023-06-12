@@ -1,8 +1,11 @@
 services:
   peterfox:
     ingressRoute:
-      domain: "my-domain.com"
-      entryPointName: "after-proxy"
+      domain: "peter-fox.edu.iits.tech"
+      entryPointName: "websecure"
+      certificate:
+        name: peter-fox-cert
+        clusterIssuer: letsencrypt
     nameOverride:
     image:
       repository: "kasmweb/ubuntu-focal-desktop"
