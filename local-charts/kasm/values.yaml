@@ -10,11 +10,8 @@ image:
   tag: "latest"
   pullPolicy: "IfNotPresent"
 replicaCount: 1
-podSecurityContext:
-  fsGroup: 2000
 securityContext:
-  runAsUser: 1000
-  runAsNonRoot: true
+  runAsNonRoot: false
 resources:
   requests:
     cpu: 2000m
