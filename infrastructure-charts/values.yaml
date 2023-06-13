@@ -20,7 +20,7 @@ charts:
     namespace: argocd
     targetRevision: 0.4.0
     parameters:
-      ingressRoute.certificate.enabled: "true"
+      ingressRoute.certificate.enabled: true
       ingressRoute.entryPointName: "websecure"
 
 
