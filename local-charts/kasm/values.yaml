@@ -6,6 +6,8 @@ config:
     use_ipv4: true
     use_ipv6: true
     ssl:
+      pem_certificate: ${HOME}/.vnc/self.pem
+      pem_key: ${HOME}/.vnc/self.pem
       require_ssl: false
     udp:
       public_ip: auto

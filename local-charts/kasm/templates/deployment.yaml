@@ -45,9 +45,20 @@ spec:
           volumeMounts:
             - name: {{ $.Release.Name }}-config
               mountPath: /etc/kasmvnc
+            - name: {{ $.Release.Name }}-cert
+              mountPath: /opt/kasm/current/certs
+              readOnly: true
       volumes:
         - name: {{ $.Release.Name }}-config
           configMap:
             name: {{ $.Release.Name }}-config
+        - name: {{ $.Release.Name }}-cert
+          secret:
+            secretName: {{$serviceValues.ingressRoute.certificate.name}}
+            items:
+              - key: tls.key
+                path: kasm_nginx.key
+              - key: tls.cert
+                path: kasm_nginx.crt
 ---
 {{- end }}
