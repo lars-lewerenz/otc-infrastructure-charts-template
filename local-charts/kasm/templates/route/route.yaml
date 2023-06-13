@@ -1,24 +1,27 @@
+{{ range $serviceName,$serviceValues := .Values.services }}
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: {{.Release.Name }}
+  name: {{$serviceName}}
 spec:
   entryPoints:
-    - {{.Values.ingressRoute.entryPointName}}
+    - {{$serviceValues.ingressRoute.entryPointName}}
   routes:
     - kind: Rule
-      match: Host(`{{.Values.ingressRoute.domain}}`)
+      match: Host(`{{$serviceValues.ingressRoute.domain}}`)
       middlewares:
         - name: websocket-headers
           namespace: {{ $.Release.Namespace }}
       services:
         - kind: Service
-          name: {{ .Release.Name }}
+          name: {{ $serviceName}}
           namespace: {{ $.Release.Namespace }}
-          port: 3000
+          port: {{ $serviceValues.service.externalPort }}
           scheme: https
           passHostHeader: true
   tls:
-    secretName: {{.Values.ingressRoute.certificate.name}}
+    secretName: {{$serviceValues.ingressRoute.certificate.name}}
     domains:
-      - main: {{ .Values.ingressRoute.domain}}
+      - main: {{ $serviceValues.ingressRoute.domain}}
+
+{{- end }}

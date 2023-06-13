@@ -1,52 +1,59 @@
 {{- $configChecksum := include (print $.Template.BasePath "/config.yaml") . | sha256sum }}
+{{ range $serviceName,$serviceValues := .Values.services }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ default .Release.Name .Values.nameOverride }}
+  name: {{ default $serviceName $serviceValues.nameOverride }}
 spec:
   selector:
     matchLabels:
-      app: {{ default .Release.Name .Values.nameOverride }}
-      release: {{ default .Release.Name .Values.nameOverride }}
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
+      app: {{ default $serviceName $serviceValues.nameOverride }}
+      release: {{ default $serviceName $serviceValues.nameOverride }}
+  {{- if not $serviceValues.autoscaling.enabled }}
+  replicas: {{ $serviceValues.replicaCount }}
   {{- end }}
   template:
     metadata:
       annotations:
         configChecksum: {{ $configChecksum }}
       labels:
-        app: {{ default .Release.Name .Values.nameOverride }}
-        release: {{ default .Release.Name .Values.nameOverride }}
+        app: {{ default $serviceName $serviceValues.nameOverride }}
+        release: {{ default $serviceName $serviceValues.nameOverride }}
     spec:
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml $serviceValues.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ default .Release.Name .Values.nameOverride }}
-          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-          imagePullPolicy: {{ default "IfNotPresent" .Values.image.pullPolicy }}
+        - name: {{ default $serviceName $serviceValues.nameOverride }}
+          image: {{ $serviceValues.image.repository }}:{{ $serviceValues.image.tag }}
+          imagePullPolicy: {{ default "IfNotPresent" $serviceValues.image.pullPolicy }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            {{- toYaml $serviceValues.securityContext | nindent 12 }}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml $serviceValues.resources | nindent 12 }}
           ports:
-            - name: https
-              containerPort: 443
-            - name: management
-              containerPort: 3000
+            - name: app-internal
+              containerPort: {{ $serviceValues.service.port }}
           livenessProbe:
-            {{- toYaml .Values.livenessProbe | nindent 12 }}
+            {{- toYaml $serviceValues.livenessProbe | nindent 12 }}
           readinessProbe:
-            {{- toYaml .Values.readinessProbe | nindent 12 }}
+            {{- toYaml $serviceValues.readinessProbe | nindent 12 }}
           env:
-            {{- range $key, $value := .Values.extraEnv }}
+            {{- range $key, $value := $serviceValues.extraEnv }}
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
-{{/*          volumeMounts:*/}}
-{{/*            - name: {{ $.Release.Name }}-config*/}}
-{{/*              mountPath: /etc/kasmvnc*/}}
-{{/*      volumes:*/}}
-{{/*        - name: {{ $.Release.Name }}-cert*/}}
-{{/*          secret:*/}}
-{{/*            secretName: {{.Values.ingressRoute.certificate.name}}*/}}
+          volumeMounts:
+            - name: {{ $.Release.Name }}-config
+              mountPath: /etc/kasmvnc
+            - name: {{ $.Release.Name }}-cert
+              mountPath: /opt/kasm/current/certs
+              readOnly: true
+      volumes:
+        - name: {{ $.Release.Name }}-config
+          configMap:
+            name: {{ $.Release.Name }}-config
+        - name: {{ $.Release.Name }}-cert
+          secret:
+            secretName: {{$serviceValues.ingressRoute.certificate.name}}
+---
+{{- end }}

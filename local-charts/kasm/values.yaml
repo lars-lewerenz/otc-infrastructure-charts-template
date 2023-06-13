@@ -1,28 +1,49 @@
-ingressRoute:
-  domain: "peter-fox.edu.iits.tech"
-  entryPointName: "websecure"
-  certificate:
-    name: peter-fox-cert
-    clusterIssuer: letsencrypt
-nameOverride:
-image:
-  repository: "linuxserver/kasm"
-  tag: "latest"
-  pullPolicy: "IfNotPresent"
-replicaCount: 1
-securityContext:
-  runAsNonRoot: false
-resources:
-  requests:
-    cpu: 2000m
-    memory: 4096Mi
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 10
-  targetCPUUtilizationPercentage: 80
-extraEnv:
-  VNC_PW: "password"
-  KASM_SVC_GAMEPAD: 0
-  KASM_SVC_AUDIO_INPUT: 0
-  KASM_SVC_UPLOADS: 0
+config:
+  network:
+    protocol: http
+    interface: 0.0.0.0
+    websocket_port: 6091
+    use_ipv4: true
+    ssl:
+      pem_certificate: /opt/kasm/current/certs/tls.crt
+      pem_key: /opt/kasm/current/certs/tls.key
+      require_ssl: true
+    udp:
+      public_ip: auto
+
+services:
+  peterfox:
+    ingressRoute:
+      domain: "peter-fox.edu.iits.tech"
+      entryPointName: "websecure"
+      certificate:
+        name: peter-fox-cert
+        clusterIssuer: letsencrypt
+    nameOverride:
+    image:
+      repository: "kasmweb/ubuntu-focal-desktop"
+      tag: "1.13.0"
+      pullPolicy: "IfNotPresent"
+    replicaCount: 1
+    service:
+      port: 6901
+      externalPort: 6901
+    podSecurityContext:
+      fsGroup: 2000
+    securityContext:
+      runAsUser: 1000
+      runAsNonRoot: true
+    resources:
+      requests:
+        cpu: 2000m
+        memory: 4096Mi
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 80
+    extraEnv:
+      VNC_PW: "password"
+      KASM_SVC_GAMEPAD: 0
+      KASM_SVC_AUDIO_INPUT: 0
+      KASM_SVC_UPLOADS: 0
