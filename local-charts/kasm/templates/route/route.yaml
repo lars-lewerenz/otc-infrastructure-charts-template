@@ -17,7 +17,6 @@ spec:
           name: {{ $serviceName}}
           namespace: {{ $.Release.Namespace }}
           port: {{ $serviceValues.service.externalPort }}
-          scheme: https
           passHostHeader: true
 
 {{- end }}
