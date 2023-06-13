@@ -1,3 +1,4 @@
+{{- $configChecksum := include (print $.Template.BasePath "/config.yaml") . | sha256sum }}
 {{ range $serviceName,$serviceValues := .Values.services }}
 apiVersion: apps/v1
 kind: Deployment
@@ -13,6 +14,8 @@ spec:
   {{- end }}
   template:
     metadata:
+      annotations:
+        configChecksum: {{ $configChecksum }}
       labels:
         app: {{ default $serviceName $serviceValues.nameOverride }}
         release: {{ default $serviceName $serviceValues.nameOverride }}
