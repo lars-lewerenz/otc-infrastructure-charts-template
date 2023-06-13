@@ -7,7 +7,7 @@ config:
     ssl:
       pem_certificate: /opt/kasm/current/certs/tls.crt
       pem_key: /opt/kasm/current/certs/tls.key
-      require_ssl: true
+      require_ssl: false
     udp:
       public_ip: auto
 
