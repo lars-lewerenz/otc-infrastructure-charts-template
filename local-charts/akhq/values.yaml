@@ -18,7 +18,7 @@ akhq:
       connections:
         kafka:
           properties:
-            bootstrap.servers: "kafka:9092"
+            bootstrap.servers: "10.8.1.47:9092,10.8.7.161:9092,10.8.2.42:9092"
       server:
         access-log:
           enabled: true
