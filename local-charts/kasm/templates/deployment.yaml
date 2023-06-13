@@ -45,9 +45,6 @@ spec:
           volumeMounts:
             - name: {{ $.Release.Name }}-config
               mountPath: /etc/kasmvnc
-            - name: {{ $.Release.Name }}-config
-              mountPath:  /home/kasm-user/.vnc/
-              subPath: kasmvnc.yaml
             - name: {{ $.Release.Name }}-cert
               mountPath: /opt/kasm/current/certs
               readOnly: true
