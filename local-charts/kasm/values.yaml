@@ -5,8 +5,8 @@ config:
     websocket_port: 6091
     use_ipv4: true
     ssl:
-      pem_certificate: /opt/kasm/current/certs/tls.crt
-      pem_key: /opt/kasm/current/certs/tls.key
+      pem_certificate: ${HOME}/.vnc/self.pem
+      pem_key: ${HOME}/.vnc/self.pem
       require_ssl: false
     udp:
       public_ip: auto
