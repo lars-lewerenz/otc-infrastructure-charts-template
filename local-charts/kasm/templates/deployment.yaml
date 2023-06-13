@@ -48,16 +48,7 @@ spec:
             - name: {{ $.Release.Name }}-cert
               mountPath: /opt/kasm/current/certs
               readOnly: true
-            - name: {{ $.Release.Name }}-config
-              mountPath: /dockerstartup
-              subPath: vnc_startup.sh
       volumes:
-        - name: {{ $.Release.Name }}-startup-config
-          configMap:
-            name: {{ $.Release.Name }}-confi
-            items:
-              - key: vnc_startup.sh
-                path: vnc_startup.sh
         - name: {{ $.Release.Name }}-config
           configMap:
             name: {{ $.Release.Name }}-config
