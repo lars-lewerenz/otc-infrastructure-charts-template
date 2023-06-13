@@ -8,9 +8,6 @@ spec:
     - {{$serviceValues.ingressRoute.entryPointName}}
   routes:
     - match: HostSNI(`{{$serviceValues.ingressRoute.domain}}`)
-      middlewares:
-        - name: websocket-headers
-          namespace: {{ $.Release.Namespace }}
       services:
         - name: {{ $serviceName}}
           namespace: {{ $.Release.Namespace }}
