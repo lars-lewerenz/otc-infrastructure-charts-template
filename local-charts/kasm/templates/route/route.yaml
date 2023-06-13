@@ -13,7 +13,6 @@ spec:
         - kind: Service
           name: {{ $serviceName}}
           namespace: {{ $.Release.Namespace }}
-          passHostHeader: true
           port: {{ $serviceValues.service.externalPort }}
   tls:
     secretName: {{$serviceValues.ingressRoute.certificate.name}}
