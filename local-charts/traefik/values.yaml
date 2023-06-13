@@ -1,0 +1,39 @@
+traefik:
+  globalArguments:
+    - "--global.checknewversion"
+  additionalArguments:
+    - "--ping"
+    - "--serversTransport.insecureSkipVerify=true"
+  logs:
+    general:
+      format: json
+      level: INFO
+    access:
+      format: json
+      enabled: false
+  deployment:
+    replicas: 2
+  service:
+    type: LoadBalancer
+    spec:
+      externalTrafficPolicy: Cluster
+  ports:
+    after-proxy:
+      exposedPort: 8444
+      port: 8444
+      expose: false
+      protocol: TCP
+      tls:
+        enabled: false
+  providers:
+    kubernetesCRD:
+      enabled: true
+      allowCrossNamespace: true
+    kubernetesIngress:
+      enabled: true
+  ingressClass:
+    enabled: true
+    isDefaultClass: true
+
+ingressRoute:
+  adminDomain: "admin.my-domain.com"
