@@ -11,6 +11,7 @@ spec:
       match: Host(`{{$serviceValues.ingressRoute.domain}}`)
       middlewares:
         - name: websocket-headers
+          namespace: {{.Release.Namespace }}
       services:
         - kind: Service
           name: {{ $serviceName}}
