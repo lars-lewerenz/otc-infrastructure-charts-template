@@ -89,11 +89,6 @@ charts:
       "wordpress.externalDatabase.user": "{{.Values.projectValues.wordpressDbUsername}}"
       "wordpress.externalDatabase.password": "{{.Values.projectValues.wordpressDbPassword}}"
 
-  kasm:
-    namespace: kasm
-    targetRevision: "main"
-    repoURL: "https://github.com/lars-lewerenz/otc-infrastructure-charts-template.git"
-    path: "local-charts/kasm"
 
   airbyte:
     namespace: airbyte
