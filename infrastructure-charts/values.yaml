@@ -94,3 +94,9 @@ charts:
     targetRevision: "main"
     repoURL: "https://github.com/lars-lewerenz/otc-infrastructure-charts-template.git"
     path: "local-charts/kasm"
+
+  airbyte:
+    namespace: airbyte
+    targetRevision: "main"
+    repoURL: "https://github.com/lars-lewerenz/otc-infrastructure-charts-template.git"
+    path: "local-charts/airbyte"
