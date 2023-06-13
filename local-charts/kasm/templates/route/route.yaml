@@ -19,9 +19,5 @@ spec:
           port: {{ $serviceValues.service.externalPort }}
           scheme: https
           passHostHeader: true
-  tls:
-    secretName: {{$serviceValues.ingressRoute.certificate.name}}
-    domains:
-      - main: {{ $serviceValues.ingressRoute.domain}}
 
 {{- end }}
