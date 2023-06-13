@@ -55,10 +55,8 @@ spec:
         - name: {{ $.Release.Name }}-cert
           secret:
             secretName: {{$serviceValues.ingressRoute.certificate.name}}
-{{/*            items:*/}}
-{{/*              - key: tls.key*/}}
-{{/*                path: kasm_nginx.key*/}}
-{{/*              - key: tls.cert*/}}
-{{/*                path: kasm_nginx.crt*/}}
+            items:
+              - key: tls.crt
+                path: tls.crt
 ---
 {{- end }}
