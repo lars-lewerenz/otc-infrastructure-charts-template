@@ -26,8 +26,8 @@ services:
       pullPolicy: "IfNotPresent"
     replicaCount: 1
     service:
-      port: 4443
-      externalPort: 4443
+      port: 443
+      externalPort: 443
     podSecurityContext:
       fsGroup: 2000
     securityContext:
