@@ -9,6 +9,8 @@ spec:
   routes:
     - kind: Rule
       match: Host(`{{$serviceValues.ingressRoute.domain}}`)
+      middlewares:
+        - name: websocket-headers
       services:
         - kind: Service
           name: {{ $serviceName}}
