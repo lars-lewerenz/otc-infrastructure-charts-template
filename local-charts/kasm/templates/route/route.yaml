@@ -9,11 +9,20 @@ spec:
   routes:
     - kind: Rule
       match: Host(`{{$serviceValues.ingressRoute.domain}}`)
+      middlewares:
+        - name: websocket-headers
+          namespace: {{ $.Release.Namespace }}
       services:
         - kind: Service
           name: {{ $serviceName}}
           namespace: {{ $.Release.Namespace }}
           port: {{ $serviceValues.service.externalPort }}
+          scheme: https
           passHostHeader: true
+
+  tls:
+    secretName: {{$serviceValues.ingressRoute.certificate.name}}
+    domains:
+      - main: {{ $serviceValues.ingressRoute.domain}}
 
 {{- end }}
