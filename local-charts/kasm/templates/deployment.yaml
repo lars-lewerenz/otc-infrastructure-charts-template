@@ -43,10 +43,10 @@ spec:
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
-          volumeMounts:
-            - name: {{ $.Release.Name }}-config
-              mountPath: /etc/kasmvnc
-      volumes:
-        - name: {{ $.Release.Name }}-cert
-          secret:
-            secretName: {{.Values.ingressRoute.certificate.name}}
+{{/*          volumeMounts:*/}}
+{{/*            - name: {{ $.Release.Name }}-config*/}}
+{{/*              mountPath: /etc/kasmvnc*/}}
+{{/*      volumes:*/}}
+{{/*        - name: {{ $.Release.Name }}-cert*/}}
+{{/*          secret:*/}}
+{{/*            secretName: {{.Values.ingressRoute.certificate.name}}*/}}
