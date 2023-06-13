@@ -5,4 +5,4 @@ version: 0.1.0
 dependencies:
   - name: airbyte
     repository: https://airbytehq.github.io/helm-charts
-    version: 0.43.13
+    version: 0.45.35
