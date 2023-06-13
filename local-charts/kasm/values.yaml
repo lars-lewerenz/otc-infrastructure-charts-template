@@ -37,6 +37,6 @@ services:
       targetCPUUtilizationPercentage: 80
     extraEnv:
       VNC_PW: "password"
-      KASM_SVC_GAMEPAD: 0
+#      KASM_SVC_GAMEPAD: 0
       KASM_SVC_AUDIO_INPUT: 0
 #      KASM_SVC_UPLOADS: 0
