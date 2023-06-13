@@ -1,6 +1,6 @@
 config:
   network:
-    protocol: https
+    protocol: http
     interface: peter-fox.edu.iits.tech
     websocket_port: auto
     use_ipv4: true
