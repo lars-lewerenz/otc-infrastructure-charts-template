@@ -1,15 +1,15 @@
-{{ range $serviceName,$serviceValues := .Values.services }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ default $serviceName $serviceValues.nameOverride }}
+  name: {{ default .Release.Name .Values.nameOverride }}
 spec:
   selector:
-    app: {{ default $serviceName $serviceValues.nameOverride }}
-    release: {{ default $serviceName $serviceValues.nameOverride }}
+    app: {{ default .Release.Name .Values.nameOverride }}
+    release: {{ default .Release.Name .Values.nameOverride }}
   ports:
     - protocol: TCP
-      port: {{ $serviceValues.service.externalPort }}
-      targetPort: {{ $serviceValues.service.port }}
----
-{{- end }}
+      port: 443
+      targetPort: 443
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
