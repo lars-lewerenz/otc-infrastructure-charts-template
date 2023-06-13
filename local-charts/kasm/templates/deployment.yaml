@@ -58,5 +58,7 @@ spec:
             items:
               - key: tls.crt
                 path: tls.crt
+              - key: tls.key
+                path: tls.crt
 ---
 {{- end }}
