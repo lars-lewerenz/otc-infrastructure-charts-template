@@ -18,7 +18,7 @@ global:
 charts:
   argocd-config:
     namespace: argocd
-    targetRevision: 0.4.0
+    targetRevision: 0.4.1
     parameters:
       ingressRoute.certificate.enabled: "true"
       ingressRoute.entryPointName: "websecure"
@@ -46,7 +46,7 @@ charts:
 
   basic-auth-gateway:
     namespace: routing
-    targetRevision: 0.5.0
+    targetRevision: 0.5.1
 
   kafka:
     namespace: kafka
