@@ -63,6 +63,7 @@ charts:
     targetRevision: 22.1.5 # Helm Chart Repo URL
     overrideChartName: kafka # You can override the chart name
     disableAutoSync: false # If set to true the sync will not happen automatically, you need to do it manually over the UI
+    valueFile: "value-files/kafka/values.yaml"
     parameters:
       "kafka.replicaCount": "1"
 
