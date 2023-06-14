@@ -50,11 +50,6 @@ charts:
     parameters:
       "ingressRoute.domain": "{{.Values.projectValues.adminDomain}}"
 
-  kafka:
-    namespace: kafka
-    targetRevision: 17.2.6
-    parameters:
-      "kafka.replicaCount": "1"
 
   # Remote chart from public helm repo
   bitnami-kafka:
