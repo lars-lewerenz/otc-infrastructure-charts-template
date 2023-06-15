@@ -10,6 +10,7 @@ wordpress:
     database: wordpress
     user: wordpress # set by argocd
     password: password # set by argocd
+    port: 5432 # set by argocd
   service:
     type: ClusterIP
   multisite:

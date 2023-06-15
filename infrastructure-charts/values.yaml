@@ -6,6 +6,7 @@ projectValues:
   storageClassKmsKeyId: "SET_BY_TERRAFORM"
   wordpressDbUsername: "SET_BY_TERRAFORM"
   wordpressDbPassword: "SET_BY_TERRAFORM"
+  wordpressDbPort: "SET_BY_TERRAFORM"
 
 global:
   helm:
@@ -89,6 +90,7 @@ charts:
     parameters:
       "wordpress.externalDatabase.user": "{{.Values.projectValues.wordpressDbUsername}}"
       "wordpress.externalDatabase.password": "{{.Values.projectValues.wordpressDbPassword}}"
+      "wordpress.externalDatabase.port": "{{.Values.projectValues.wordpressDbPort}}"
 
 
   airbyte:
