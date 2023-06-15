@@ -8,8 +8,8 @@ wordpress:
     enabled: false
   externalDatabase:
     database: wordpress
-    user: # set by argocd
-    password: # set by argocd
+    user: wordpress # set by argocd
+    password: password # set by argocd
   service:
     type: ClusterIP
   multisite:
