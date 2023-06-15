@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgres
+  name: rds
 spec:
   selector:
     matchLabels:
-      app: my-postgresql
+      app: rds
   replicas: 1
   template:
     metadata:
       labels:
-        app: postgres
+        app: rds
     spec:
       containers:
-        - name: postgres
+        - name: rds
           image: postgres
           imagePullPolicy: "IfNotPresent"
           env:
